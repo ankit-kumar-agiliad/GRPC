@@ -25,6 +25,7 @@ cipList.map(client => {
     call.end()
 })
 
+
 app.get('/test', (req, res) => {
     const id = req.query.id;
     console.log(req.query);

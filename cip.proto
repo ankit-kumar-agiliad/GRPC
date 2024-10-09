@@ -18,13 +18,18 @@ message ClientInfo {
 }
 
 message Clientid {
-    string id = 1;
+  string id = 1;
 }
 
 message Equipment {
   string id = 1;
-  string name = 2;
-  bool status = 3;
+  repeated EquipmentName equipmentname = 3;
+}
+
+message EquipmentName {
+  string name = 1;
+  bool status = 2;
+  string count = 3;
 }
 
 message CipResponse {

@@ -34,3 +34,5 @@ function main(argv) {
 
 
 main(process.argv);
+
+///need to run loop in both cen cip and first connect then server should send data continuosly

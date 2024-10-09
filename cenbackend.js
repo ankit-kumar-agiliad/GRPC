@@ -7,13 +7,23 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
 const cipProto = protoLoader.loadSync("cip.proto", {});
-const cenProto = protoLoader.loadSync("cen_backend.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(cipProto);
-const cengRPCObject = grpc.loadPackageDefinition(cenProto);
-const cen = cengRPCObject.cen_backend;
 const cips = gRPCObject.cips;
 
 let cipList = [];
+
+cipList.map(client => {
+    const call = client.client.MessageFromcen();
+    call.write({ message: "Message from cen to cip" })
+    call.on('data', (data) => {
+        console.log("Hello world: from server", data);
+    });
+    call.on('end', () => {
+        console.log("the server responded disconnect");
+
+    })
+    call.end()
+})
 
 app.get('/test', (req, res) => {
     const id = req.query.id;
@@ -22,15 +32,15 @@ app.get('/test', (req, res) => {
     console.log(cipList, id)
     const cip = cipList.find(cip => cip.id === id);
     console.log(cip);
-    cip.client.getName({ id: "4", name: "prateek", port: "6000" }, (err, response) => {
+    cip.client.Getname({ id: cip.id, name: "", port: "" }, (err, response) => {
         if (err) {
             console.log("IN ERROR CEN")
             console.log(err.message);
             res.send(err.message)
         } else {
             console.log
-                (`CIP client added: ${response.message}`);
-            res.send(`CIP client added: ${response.message}`)
+                (`CIP client added: ${JSON.stringify(response)}`);
+            res.send(JSON.stringify(response));
 
         }
 
@@ -51,6 +61,7 @@ app.post("/cips", (req, res) => {
 
 // function main() {
 //     const server = new grpc.Server();
+//     server.addService(cen.CenBackend.service, { GotFromCip: getMessageFromCip })
 //     server.bindAsync('127.0.0.1:50055', grpc.ServerCredentials.createInsecure(), (err, port) => {
 //         if (err)
 //             console.log("JMMMMMM   ", err.message)

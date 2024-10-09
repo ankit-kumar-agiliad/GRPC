@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package grpc;
+
+message EquipmentConfig {
+    int32 equipment_id = 1;
+    string config_name = 2;
+    string config_value = 3;
+}
+
+message EquipmentConfigList {
+    repeated EquipmentConfig configs = 1;
+    int32 server_id = 2;
+}

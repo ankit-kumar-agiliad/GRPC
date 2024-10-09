@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package cen_backend;
+
+service Cen_Backend {
+    rpc GotFromCip (ClientInfo) returns (Censtatus);
+}
+
+message Censtatus {
+    string message = 1;
+}
+
+message ClientInfo {
+    string name = 1;
+    string id = 2;
+    string port = 3;
+}

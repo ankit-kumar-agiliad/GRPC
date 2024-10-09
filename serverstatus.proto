@@ -1,0 +1,9 @@
+syntax = "proto3";
+import "equipmentstatus.proto";
+package grpc;
+
+message ServerStatus {
+    int32 server_id = 1;
+    string server_name = 2;
+    EquipmentStatus status = 3;
+}

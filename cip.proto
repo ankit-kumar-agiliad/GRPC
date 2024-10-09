@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package cips;
+
+service Cips {
+    rpc requestFromCen (ClientInfo) returns (status);
+    rpc getName (ClientInfo) returns (name);
+}
+
+message status {
+    string message = 1;
+}
+
+message ClientInfo {
+    string name = 1;
+    string id = 2;
+    string port = 3;
+}
+
+message name {
+    string message = 1;
+}

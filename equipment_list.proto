@@ -1,0 +1,14 @@
+syntax = "proto3";
+import "equipmentstatus.proto";
+package grpc;
+
+message Equipment {
+    int32 equipment_id = 1;
+    string equipment_name = 2;
+    EquipmentStatus equipment_status = 3;  // Use the status message from status.proto
+}
+
+message EquipmentList {
+    repeated Equipment equipment = 1;
+    int32 server_id = 2;
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "serverstatus.proto";
+import "equipment_list.proto";
+import "equipment_config.proto";
+
+package grpc;
+
+service EquipmentService {
+    rpc GetStatusStream(StatusRequest) returns (stream ServerStatus);  // Server-side streaming for status updates
+    rpc GetEquipmentListStream(EmptyRequest) returns (stream EquipmentList);  // Server-side streaming for equipment list
+    rpc GetEquipmentConfigStream(EmptyRequest) returns (stream EquipmentConfigList);  // Streaming for equipment configuration
+}
+
+message StatusRequest {
+    int32 client_id = 1;
+    string client_name = 2;
+}
+
+message EmptyRequest {}
+
+message EquipmentConfigRequest {
+    string equipment_id = 1;
+}

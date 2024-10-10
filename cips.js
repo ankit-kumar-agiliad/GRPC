@@ -40,9 +40,9 @@ function main(argv) {
                         item.equipmentname.filter(equipment => {
                             const status = (Math.random() * 10) > 5 ? "online" : "offline";
 
-                            console.log({ name: equipment.name, status });
+                            console.log({ name: equipment.name, status, type: equipment.type });
 
-                            stream.write({ name: equipment.name, status });
+                            stream.write({ name: equipment.name, status,type: equipment.type });
 
                         })
                     }

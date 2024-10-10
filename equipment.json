@@ -1,26 +1,29 @@
 [
     {
-        "region": "Canada",
+        "region": "USA",
         "equipmentname": [
             {
                 "id": 1,
                 "name": "PVS1",
-                "status": "online"
+                "status": "online",
+                "type": "PVS"
             },
             {
                 "id": 2,
                 "name": "SVS1",
-                "status": "offline"
+                "status": "offline",
+                "type": "SVS"
             },
             {
                 "id": 3,
                 "name": "Scanners1",
-                "status": "online"
+                "status": "online",
+                "type": "Scanner"
             }
         ]
     },
     {
-        "region": "USA",
+        "region": "Canada",
         "equipmentname": [
             {
                 "id": 1,
@@ -45,17 +48,20 @@
             {
                 "id": 1,
                 "name": "PVS3",
-                "status": "online"
+                "status": "online",
+                "type": "PVS"
             },
             {
                 "id": 2,
                 "name": "SVS3",
-                "status": "online"
+                "status": "online",
+                "type": "SVS"
             },
             {
                 "id": 3,
                 "name": "Scanners3",
-                "status": "online"
+                "status": "online",
+                "type": "Scanner"
             }
         ]
     }

@@ -10,6 +10,7 @@ service Cips {
 message Status {
   string name = 1;
   string status = 2;
+  string type = 3;
 }
 
 message ClientInfo {
@@ -30,7 +31,7 @@ message Equipment {
 message EquipmentName {
   string name = 1;
   string status = 2;
-  string count = 3;
+  string type = 3;
 }
 
 message CipResponse {

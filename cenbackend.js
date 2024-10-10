@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
@@ -16,11 +19,11 @@ function startStreaming() {
     cipList.forEach(client => {
         console.log(JSON.stringify(client));
         const id = client.id;
-        
+
         client.client.GetEquipmentStatus({ id: id })
             .on("data", (status) => {
                 console.log(JSON.stringify(status));
-                
+
                 console.log(`Received status update - Equipment name: ${status.name}, Status: ${status.status}, ${id}`);
             })
             .on("end", () => {
@@ -78,7 +81,7 @@ app.post("/cips", (req, res) => {
 // }
 // main();
 
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log("Server running on port 3000");
 
 });

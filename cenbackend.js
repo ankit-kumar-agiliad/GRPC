@@ -11,20 +11,40 @@ const gRPCObject = grpc.loadPackageDefinition(cipProto);
 const cips = gRPCObject.cips;
 
 let cipList = [];
+function startStreaming() {
 
-cipList.map(client => {
-    const call = client.client.MessageFromcen();
-    call.write({ message: "Message from cen to cip" })
-    call.on('data', (data) => {
-        console.log("Hello world: from server", data);
-    });
-    call.on('end', () => {
-        console.log("the server responded disconnect");
-
+    cipList.forEach(client => {
+        console.log(JSON.stringify(client));
+        const id = client.id;
+        
+        client.client.GetEquipmentStatus({ id: id })
+            .on("data", (status) => {
+                console.log(`Received status update - Equipment ID: ${status.equipmentId}, Status: ${status.status}, ${id}`);
+            })
+            .on("end", () => {
+                console.log("Server has ended the stream.");
+            });
     })
-    call.end()
-})
 
+}
+// function startStreaming() {
+//     setInterval(() => {
+
+//         cipList.map(client => {
+//             const call = client.client.MessageTocen({}, (err) => {
+//                 console.log(err);
+//             });
+//             call.on('data', (data) => {
+//                 console.log("Hello world: from server", data);
+//             });
+//             call.on('end', () => {
+//                 console.log("the server responded disconnect");
+//             })
+//             // call.end();
+//         })
+//     }, 10000);
+
+// }
 
 app.get('/test', (req, res) => {
     const id = req.query.id;
@@ -56,6 +76,7 @@ app.post("/cips", (req, res) => {
 
     cipList.push(clientInfo);
 
+    startStreaming();
 
     res.send(cipList)
 })

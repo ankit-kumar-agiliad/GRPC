@@ -1,10 +1,13 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const equipmentInfo = require('./equipment.json');
+const fs = require('fs');
 
 const packageDef = protoLoader.loadSync("cip.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(packageDef);
 const cip = gRPCObject.cips;
+
+let clients = {};
+
 
 function getName(call, callback) {
     console.log(call.request.id);
@@ -22,7 +25,27 @@ function main(argv) {
     console.log(argv);
 
     server.addService(cip.Cips.service, {
-        Getname: getName
+        Getname: getName,
+        GetEquipmentStatus: (call) => {
+
+            const clientId = call.request.id;
+            const stream = call;
+            console.log(clientId);
+
+
+            clients[clientId] = stream;
+
+            // Simulate sending status updates
+            setInterval(() => {
+                const status = (Math.random() * 10) > 5 ? "online" : "offline";
+                stream.write({ equipmentId: `Equipment-${Math.floor(Math.random() * 10)}`, status });
+            }, 5000);
+
+            stream.on('end', () => {
+                delete clients[clientId];
+                stream.end();
+            });
+        }
     });
 
     server.bindAsync(`0.0.0.0:${process.argv[2]}`, grpc.ServerCredentials.createInsecure(), () => {

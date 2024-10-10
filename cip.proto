@@ -3,12 +3,13 @@ syntax = "proto3";
 package cips;
 
 service Cips {
-  rpc MessageFromcen(stream CipMessage) returns (stream Status);
+  rpc GetEquipmentStatus(Clientid) returns (stream Status);
   rpc Getname(ClientInfo) returns (CipResponse);
 }
 
 message Status {
-  string message = 1;
+  string equipment_id = 1;
+  string status = 2;
 }
 
 message ClientInfo {

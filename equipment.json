@@ -1,31 +1,28 @@
 [
     {
-        "id": "Canada",
+        "region": "Canada",
         "equipmentname": [
             {
+                "id": 1,
                 "name": "PVS",
                 "count": 5,
                 "status": true
             },
             {
+                "id": 2,
                 "name": "SVS",
                 "count": 6,
-                "status": true
+                "status": false
             },
             {
                 "name": "Scanners",
                 "count": 9,
                 "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 10,
-                "status": true
             }
         ]
     },
     {
-        "id": "USA",
+        "region": "USA",
         "equipmentname": [
             {
                 "name": "PVS",
@@ -41,16 +38,11 @@
                 "name": "Scanners",
                 "count": 19,
                 "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 20,
-                "status": true
             }
         ]
     },
     {
-        "id": "India",
+        "region": "India",
         "equipmentname": [
             {
                 "name": "PVS",
@@ -65,11 +57,6 @@
             {
                 "name": "Scanners",
                 "count": 29,
-                "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 25,
                 "status": true
             }
         ]

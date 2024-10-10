@@ -1,7 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const fs = require('fs');
-
+const equipmentInfo = require("./equipment.json")
 const packageDef = protoLoader.loadSync("cip.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(packageDef);
 const cip = gRPCObject.cips;
@@ -13,9 +12,9 @@ function getName(call, callback) {
     console.log(call.request.id);
     const id = call.request.id;
     const equipmentDetails = equipmentInfo.find(equipment => {
-        return equipment.id === id;
+        if (equipment.region === process.argv[3])
+            return equipment;
     })
-    console.log(equipmentDetails);
 
     callback(null, { id, name: process.argv[3], port: process.argv[2], equipment: equipmentDetails })
 }
@@ -30,15 +29,25 @@ function main(argv) {
 
             const clientId = call.request.id;
             const stream = call;
-            console.log(clientId);
-
 
             clients[clientId] = stream;
 
             // Simulate sending status updates
             setInterval(() => {
-                const status = (Math.random() * 10) > 5 ? "online" : "offline";
-                stream.write({ equipmentId: `Equipment-${Math.floor(Math.random() * 10)}`, status });
+
+                equipmentInfo.filter(item => {
+                    if (item.region === process.argv[3]) {
+                        item.equipmentname.filter(equipment => {
+                            const status = (Math.random() * 10) > 5 ? "online" : "offline";
+
+                            console.log({ name: equipment.name, status });
+
+                            stream.write({ name: equipment.name, status });
+
+                        })
+                    }
+
+                })
             }, 5000);
 
             stream.on('end', () => {
@@ -52,8 +61,8 @@ function main(argv) {
         console.log(`Starting server ${process.argv[3]}`)
         server.start();
     });
-}
 
+}
 
 
 main(process.argv);

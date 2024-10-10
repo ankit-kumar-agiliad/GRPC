@@ -19,7 +19,9 @@ function startStreaming() {
         
         client.client.GetEquipmentStatus({ id: id })
             .on("data", (status) => {
-                console.log(`Received status update - Equipment ID: ${status.equipmentId}, Status: ${status.status}, ${id}`);
+                console.log(JSON.stringify(status));
+                
+                console.log(`Received status update - Equipment name: ${status.name}, Status: ${status.status}, ${id}`);
             })
             .on("end", () => {
                 console.log("Server has ended the stream.");
@@ -27,32 +29,14 @@ function startStreaming() {
     })
 
 }
-// function startStreaming() {
-//     setInterval(() => {
 
-//         cipList.map(client => {
-//             const call = client.client.MessageTocen({}, (err) => {
-//                 console.log(err);
-//             });
-//             call.on('data', (data) => {
-//                 console.log("Hello world: from server", data);
-//             });
-//             call.on('end', () => {
-//                 console.log("the server responded disconnect");
-//             })
-//             // call.end();
-//         })
-//     }, 10000);
-
-// }
 
 app.get('/test', (req, res) => {
     const id = req.query.id;
-    console.log(req.query);
 
-    console.log(cipList, id)
     const cip = cipList.find(cip => cip.id === id);
-    console.log(cip);
+    startStreaming();
+
     cip.client.Getname({ id: cip.id, name: "", port: "" }, (err, response) => {
         if (err) {
             console.log("IN ERROR CEN")
@@ -67,6 +51,7 @@ app.get('/test', (req, res) => {
 
     })
 
+
 })
 
 app.post("/cips", (req, res) => {
@@ -76,7 +61,6 @@ app.post("/cips", (req, res) => {
 
     cipList.push(clientInfo);
 
-    startStreaming();
 
     res.send(cipList)
 })

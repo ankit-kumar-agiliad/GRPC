@@ -1,76 +1,67 @@
 [
     {
-        "id": "Canada",
+        "region": "USA",
         "equipmentname": [
             {
-                "name": "PVS",
-                "count": 5,
-                "status": true
+                "id": 1,
+                "name": "PVS1",
+                "status": "online",
+                "type": "PVS"
             },
             {
-                "name": "SVS",
-                "count": 6,
-                "status": true
+                "id": 2,
+                "name": "SVS1",
+                "status": "offline",
+                "type": "SVS"
             },
             {
-                "name": "Scanners",
-                "count": 9,
-                "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 10,
-                "status": true
+                "id": 3,
+                "name": "Scanners1",
+                "status": "online",
+                "type": "Scanner"
             }
         ]
     },
     {
-        "id": "USA",
+        "region": "Canada",
         "equipmentname": [
             {
-                "name": "PVS",
-                "count": 15,
-                "status": true
+                "id": 1,
+                "name": "PVS2",
+                "status": "online"
             },
             {
-                "name": "SVS",
-                "count": 26,
-                "status": true
+                "id": 2,
+                "name": "SVS2",
+                "status": "online"
             },
             {
-                "name": "Scanners",
-                "count": 19,
-                "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 20,
-                "status": true
+                "id": 3,
+                "name": "Scanners2",
+                "status": "online"
             }
         ]
     },
     {
-        "id": "India",
+        "region": "India",
         "equipmentname": [
             {
-                "name": "PVS",
-                "count": 9,
-                "status": true
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
             },
             {
-                "name": "SVS",
-                "count": 11,
-                "status": true
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
             },
             {
-                "name": "Scanners",
-                "count": 29,
-                "status": true
-            },
-            {
-                "name": "Routers",
-                "count": 25,
-                "status": true
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
             }
         ]
     }

@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
@@ -11,28 +14,32 @@ const gRPCObject = grpc.loadPackageDefinition(cipProto);
 const cips = gRPCObject.cips;
 
 let cipList = [];
+function startStreaming() {
 
-cipList.map(client => {
-    const call = client.client.MessageFromcen();
-    call.write({ message: "Message from cen to cip" })
-    call.on('data', (data) => {
-        console.log("Hello world: from server", data);
-    });
-    call.on('end', () => {
-        console.log("the server responded disconnect");
+    cipList.forEach(client => {
+        console.log(JSON.stringify(client));
+        const id = client.id;
 
+        client.client.GetEquipmentStatus({ id: id })
+            .on("data", (status) => {
+                console.log(JSON.stringify(status));
+
+                console.log(`Received status update - Equipment name: ${status.name}, Status: ${status.status}, ${id}`);
+            })
+            .on("end", () => {
+                console.log("Server has ended the stream.");
+            });
     })
-    call.end()
-})
+
+}
 
 
 app.get('/test', (req, res) => {
     const id = req.query.id;
-    console.log(req.query);
 
-    console.log(cipList, id)
     const cip = cipList.find(cip => cip.id === id);
-    console.log(cip);
+    startStreaming();
+
     cip.client.Getname({ id: cip.id, name: "", port: "" }, (err, response) => {
         if (err) {
             console.log("IN ERROR CEN")
@@ -46,6 +53,7 @@ app.get('/test', (req, res) => {
         }
 
     })
+
 
 })
 
@@ -73,7 +81,7 @@ app.post("/cips", (req, res) => {
 // }
 // main();
 
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log("Server running on port 3000");
 
 });

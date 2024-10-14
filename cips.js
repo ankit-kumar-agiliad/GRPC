@@ -4,16 +4,25 @@ const equipmentInfo = require("./equipment.json")
 const packageDef = protoLoader.loadSync("cip.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(packageDef);
 const cip = gRPCObject.cips;
-
 let clients = {};
-
 
 function getName(call, callback) {
     console.log(call.request.id);
     const id = call.request.id;
     const equipmentDetails = equipmentInfo.find(equipment => {
         if (equipment.region === process.argv[3])
-            return equipment;
+        {
+            let obj=equipment;
+        function randomizeStatus(equipmentList) {
+            equipmentList.forEach(equipment => {
+              equipment.status = Math.random() > 0.5 ? 'online' : 'offline';
+            });
+          }
+          randomizeStatus(obj.equipmentname);
+            console.log("obj",obj)
+            return obj;
+        }
+       
     })
 
     callback(null, { id, name: process.argv[3], port: process.argv[2], equipment: equipmentDetails })
@@ -38,9 +47,9 @@ function main(argv) {
                 equipmentInfo.filter(item => {
                     if (item.region === process.argv[3]) {
                         item.equipmentname.filter(equipment => {
-                            const status = (Math.random() * 10) > 5 ? "online" : "offline";
+                            const status = (Math.random()*10) >5? "online" : "offline";
 
-                            console.log({ name: equipment.name, status, type: equipment.type });
+                            console.log((Math.random()*10),{ name: equipment.name, status, type: equipment.type });
 
                             stream.write({ name: equipment.name, status,type: equipment.type });
 
@@ -48,7 +57,7 @@ function main(argv) {
                     }
 
                 })
-            }, 5000);
+            }, 60000);
 
             stream.on('end', () => {
                 delete clients[clientId];

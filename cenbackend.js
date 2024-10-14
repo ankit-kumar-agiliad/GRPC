@@ -14,31 +14,36 @@ const gRPCObject = grpc.loadPackageDefinition(cipProto);
 const cips = gRPCObject.cips;
 
 let cipList = [];
-function startStreaming() {
 
-    cipList.forEach(client => {
-        console.log(JSON.stringify(client));
-        const id = client.id;
+// Import required modules
+const { WebSocket, WebSocketServer } = require("ws");
+const http = require("http");
 
-        client.client.GetEquipmentStatus({ id: id })
-            .on("data", (status) => {
-                console.log(JSON.stringify(status));
+// Create an HTTP server and a WebSocket server
+const server = http.createServer();
+const wsServer = new WebSocketServer({ server });
+const port = 8081;
 
-                console.log(`Received status update - Equipment name: ${status.name}, Status: ${status.status}, ${id}`);
-            })
-            .on("end", () => {
-                console.log("Server has ended the stream.");
-            });
-    })
+// Start the WebSocket server
+server.listen(port, () => {
+    console.log(`WebSocket server is running on port ${port}`);
+});
 
-}
+// // Handle new client connections
+wsServer.on("connection", (connection) => {
+    console.log("Received a new connection");
+    const msg = { data: "SEnding this message from server" }
+    connection.send(JSON.stringify(msg))
+    console.log("Message sent to client");
 
+    // connection.on("close", () => console.log("CLosing web socket connection"));
+});
 
 app.get('/test', (req, res) => {
     const id = req.query.id;
 
     const cip = cipList.find(cip => cip.id === id);
-    startStreaming();
+    // startStreaming();
 
     cip.client.Getname({ id: cip.id, name: "", port: "" }, (err, response) => {
         if (err) {
@@ -46,10 +51,39 @@ app.get('/test', (req, res) => {
             console.log(err.message);
             res.send(err.message)
         } else {
-            console.log
-                (`CIP client added: ${JSON.stringify(response)}`);
-            res.send(JSON.stringify(response));
+            let streamdata;
+            let resData = response
+            cip.client.GetEquipmentStatus({ id: id })
+                .on("data", (status) => {
+                    console.log("response1", JSON.stringify(status));
+                    streamdata = status
+                    let arr = response.equipment.equipmentname
+                    console.log(response.equipment, "resData", arr)
+                    if (streamdata) {
+                        let i = arr?.findIndex(data => data.name === streamdata.name)
+                        arr[i].status = streamdata.status
+                        resData.equipment.equipmentname = arr
+                        console.log("array", JSON.stringify(resData));
 
+                        wsServer.clients.forEach(client => {
+                            console.log(client);
+
+                            if (client.readyState === WebSocket.OPEN) {
+                                console.log("IN");
+
+                                client.send(JSON.stringify(resData))
+                            }
+                        });
+
+
+                    }
+                })
+                .on("end", () => {
+                    console.log("Server has ended the stream.");
+                });
+            console.log
+                (`CIP client added: ${JSON.stringify(resData)}`);
+            res.send(JSON.stringify(resData))
         }
 
     })

@@ -70,21 +70,22 @@ app.get('/test', (req, res) => {
             console.log(err.message);
             res.send(err.message)
         } else {
-
-
             let resData = response;
             let arr = response.equipment.equipmentname;
 
-
             mqttClient.on('message', (topic, message) => {
-                let streamdata = JSON.parse(message.toString());
-                console.log(`Recieved message: on ${topic} `, (streamdata));
-                if (streamdata.length > 0) {
-                    console.log("IN", arr);
-                    
-                    let i = arr?.findIndex(data => data.name === streamdata.name);
+
+                let streamdata = JSON.parse(JSON.parse(message));
+
+                if (streamdata) {
+
+                    let i = arr?.findIndex(data => {
+                        console.log(data.name, streamdata.name, typeof data.name, typeof streamdata.name);
+
+                        data.name === streamdata.name
+                    });
                     console.log(i);
-                    
+
                     if (i !== -1) {
                         arr[i].status = streamdata.status;
                         resData.equipment.equipmentname = arr;
@@ -101,10 +102,7 @@ app.get('/test', (req, res) => {
                         });
                     }
                 }
-
             })
-
-            // console.log(`CIP client added: ${JSON.stringify(resData)}`);
             res.send(JSON.stringify(resData))
         }
 
@@ -114,30 +112,17 @@ app.get('/test', (req, res) => {
 })
 
 app.post("/cips", (req, res) => {
-
     const { id, name, port } = req.body;
-    const clientInfo = { name, id, port, ip: `0.0.0.1:${port}`, client: new cips.Cips(`127.0.0.1:${port}`, grpc.credentials.createInsecure()) }
+    const clientInfo = {
+        name, id, port, ip: `0.0.0.1:${port}`, client: new cips.Cips(`127.0.0.1:${port}`, grpc.
+            credentials.createInsecure())
+    }
 
     cipList.push(clientInfo);
-
 
     res.send(cipList)
 })
 
-// function main() {
-//     const server = new grpc.Server();
-//     server.addService(cen.CenBackend.service, { GotFromCip: getMessageFromCip })
-//     server.bindAsync('127.0.0.1:50055', grpc.ServerCredentials.createInsecure(), (err, port) => {
-//         if (err)
-//             console.log("JMMMMMM   ", err.message)
-//         console.log(`Cen server starting on port ${port}`);
-//         server.start();
-
-//     })
-// }
-// main();
-
 app.listen(3001, () => {
     console.log("Server running on port 3000");
-
 });

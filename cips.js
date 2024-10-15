@@ -15,9 +15,9 @@ function getName(call, callback) {
     const id = call.request.id;
     const equipmentDetails = equipmentInfo.find(equipment => {
         if (equipment.region === process.argv[3]) {
-          
+
             let obj = equipment;
-          
+
             function randomizeStatus(equipmentList) {
                 equipmentList.forEach(equipment => {
                     equipment.status = Math.random() > 0.5 ? 'online' : 'offline';
@@ -34,20 +34,26 @@ function getName(call, callback) {
 }
 
 function publishEquipmentStatus(region) {
-    const equipmentList = equipmentInfo.filter(equipment => equipment.region === region);
 
-    equipmentList.forEach(equipment => {
+    equipmentInfo.filter(item => {
+        if (item.region === region) {
+            item.equipmentname.filter(equipment => {
+                const status = (Math.random() * 10) > 5 ? "online" : "offline";
 
-        const equipmentDetails = equipment.equipmentname.map(equipment => {
-            const status = (Math.random() * 10) > 5 ? "online" : "offline";
-            console.log("Status: ", status);
+                console.log(status, { name: equipment.name, status, type: equipment.type });
 
-            equipment.status = status
-            return equipment;
-        });
+                const message = JSON.stringify({
+                    status: status,
+                    name: equipment.name,
+                    type: equipment.type
+                })
+                console.log("Message sent to subscriber : ", JSON.parse(message));
 
-        console.log(equipmentDetails);
-        mqttClient.publish("equipment/status", JSON.stringify(equipmentDetails))
+                mqttClient.publish("equipment/status", JSON.stringify(message));
+
+            })
+        }
+
     })
 }
 

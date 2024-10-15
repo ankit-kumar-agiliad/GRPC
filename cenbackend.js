@@ -70,32 +70,31 @@ app.get('/test', (req, res) => {
             console.log(err.message);
             res.send(err.message)
         } else {
+            let streamdata;
             let resData = response;
             let arr = response.equipment.equipmentname;
 
             mqttClient.on('message', (topic, message) => {
 
-                let streamdata = JSON.parse(JSON.parse(message));
+                streamdata = JSON.parse(JSON.parse(message));
 
                 if (streamdata) {
 
-                    let i = arr?.findIndex(data => {
-                        console.log(data.name, streamdata.name, typeof data.name, typeof streamdata.name);
-
-                        data.name === streamdata.name
-                    });
-                    console.log(i);
+                    let i = arr?.findIndex((data) => data.name === streamdata.name);
 
                     if (i !== -1) {
+
                         arr[i].status = streamdata.status;
+
                         resData.equipment.equipmentname = arr;
+
                         console.log("Updated array", JSON.stringify(resData));
+
                         wsServer.clients.forEach(client => {
                             console.log(client);
 
                             if (client.readyState === WebSocket.OPEN) {
-                                console.log("IN");
-                                console.log(resData);
+                                console.log("Response send to websocket client: ", resData);
 
                                 client.send(JSON.stringify(resData))
                             }

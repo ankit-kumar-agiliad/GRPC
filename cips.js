@@ -10,6 +10,8 @@ const packageDef = protoLoader.loadSync("cip.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(packageDef);
 const cip = gRPCObject.cips;
 
+let clients = {};
+
 function getName(call, callback) {
     console.log(call.request.id);
     const id = call.request.id;
@@ -57,18 +59,68 @@ function publishEquipmentStatus(region) {
     })
 }
 
+function grpcEquipmentStatus(call) {
+    const clientId = call.request.id;
+    const stream = call;
+
+    clients[clientId] = stream;
+
+    // Simulate sending status updates
+    setInterval(() => {
+
+        equipmentInfo.filter(item => {
+            if (item.region === process.argv[3]) {
+                item.equipmentname.filter(equipment => {
+                    const status = (Math.random() * 10) > 5 ? "online" : "offline";
+
+                    console.log((Math.random() * 10), { name: equipment.name, status, type: equipment.type });
+
+                    stream.write({ name: equipment.name, status, type: equipment.type });
+
+                })
+            }
+
+        })
+    }, 60000);
+
+    stream.on('end', () => {
+        delete clients[clientId];
+        stream.end();
+    });
+}
+
 function main(argv) {
     const server = new grpc.Server();
+    let displayMethod;
 
     server.addService(cip.Cips.service, {
         Getname: getName,
+        GetEquipmentStatus: grpcEquipmentStatus
     });
+
+    mqttClient.subscribe('getmethod/status', (err) => {
+        if (err) {
+            console.log("Error in subscription: " + err);
+
+        } else {
+            console.log("106 Subscription successfully");
+
+        }
+    });
+
+    mqttClient.on("message", (topic, message) => {
+        console.log("Message: ", message.toString());
+        displayMethod = message.toString();
+    })
+    console.log(displayMethod);
 
     mqttClient.on('connect', () => {
         console.log(argv);
         console.log("client connected");
         setInterval(() => {
-            publishEquipmentStatus(process.argv[3]);
+            if (displayMethod === "MQTT") {
+                publishEquipmentStatus(process.argv[3]);
+            }
         }, 30000);
     });
 

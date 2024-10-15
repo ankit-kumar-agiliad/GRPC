@@ -34,9 +34,17 @@ server.listen(port, () => {
     console.log(`WebSocket server is running on port ${port}`);
 });
 
+let displayMethod;
+
 // // Handle new client connections
 wsServer.on("connection", (connection) => {
     console.log("Received a new connection");
+    connection.on("message", (message) => {
+        displayMethod = message.toString();
+        console.log("++++++++++", message.toString())
+        mqttClient.publish('getmethod/status', displayMethod)
+
+    });
     const msg = { data: "SEnding this message from server" }
     connection.send(JSON.stringify(msg))
     console.log("Message sent to client");
@@ -62,7 +70,7 @@ app.get('/test', (req, res) => {
     const id = req.query.id;
 
     const cip = cipList.find(cip => cip.id === id);
-    // startStreaming();
+    console.log(displayMethod);
 
     cip.client.Getname({ id: cip.id, name: "", port: "" }, (err, response) => {
         if (err) {
@@ -74,34 +82,74 @@ app.get('/test', (req, res) => {
             let resData = response;
             let arr = response.equipment.equipmentname;
 
-            mqttClient.on('message', (topic, message) => {
+            if (displayMethod !== "GRPC") {
 
-                streamdata = JSON.parse(JSON.parse(message));
+                mqttClient.on('message', (topic, message) => {
 
-                if (streamdata) {
+                    streamdata = JSON.parse(JSON.parse(message));
 
-                    let i = arr?.findIndex((data) => data.name === streamdata.name);
+                    if (streamdata) {
 
-                    if (i !== -1) {
+                        let i = arr?.findIndex((data) => data.name === streamdata.name);
 
-                        arr[i].status = streamdata.status;
+                        if (i !== -1) {
 
-                        resData.equipment.equipmentname = arr;
+                            arr[i].status = streamdata.status;
 
-                        console.log("Updated array", JSON.stringify(resData));
+                            resData.equipment.equipmentname = arr;
 
-                        wsServer.clients.forEach(client => {
-                            console.log(client);
+                            console.log("Updated array", JSON.stringify(resData));
 
-                            if (client.readyState === WebSocket.OPEN) {
-                                console.log("Response send to websocket client: ", resData);
+                            wsServer.clients.forEach(client => {
 
-                                client.send(JSON.stringify(resData))
-                            }
-                        });
+                                if (client.readyState === WebSocket.OPEN) {
+                                    console.log("Response send to websocket client: ", resData);
+
+                                    client.send(JSON.stringify(resData))
+                                }
+                            });
+                        }
                     }
-                }
-            })
+                })
+            } else {
+                cip.client.GetEquipmentStatus({ id: id })
+                    .on("data", (status) => {
+
+                        console.log("response1", JSON.stringify(status));
+
+                        streamdata = status
+
+                        let arr = response.equipment.equipmentname
+
+                        console.log(response.equipment, "resData", arr)
+
+                        if (streamdata) {
+
+                            let i = arr?.findIndex(data => data.name === streamdata.name)
+
+                            arr[i].status = streamdata.status
+
+                            resData.equipment.equipmentname = arr
+
+                            console.log("array", JSON.stringify(resData));
+
+                            wsServer.clients.forEach(client => {
+                                console.log(client);
+
+                                if (client.readyState === WebSocket.OPEN) {
+                                    console.log("IN GRPC Sending response to WebSocket-Client");
+
+                                    client.send(JSON.stringify(resData))
+                                }
+                            });
+
+
+                        }
+                    })
+                    .on("end", () => {
+                        console.log("Server has ended the stream.");
+                    });
+            }
             res.send(JSON.stringify(resData))
         }
 

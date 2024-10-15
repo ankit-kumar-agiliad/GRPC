@@ -6,6 +6,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+const mqtt = require('mqtt');
+
+const brokerUrl = "mqtt://broker.hivemq.com:1883"
+const mqttClient = mqtt.connect(brokerUrl);
+
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
@@ -39,6 +44,20 @@ wsServer.on("connection", (connection) => {
     // connection.on("close", () => console.log("CLosing web socket connection"));
 });
 
+mqttClient.on('connect', () => {
+    console.log("connected to broker");
+    mqttClient.subscribe('equipment/status', (err) => {
+        if (err) {
+            console.log('Subscribed to error: ' + err.message);
+
+        }
+        else {
+            console.log("Subscribed to successfully topic");
+
+        }
+    });
+});
+
 app.get('/test', (req, res) => {
     const id = req.query.id;
 
@@ -51,38 +70,41 @@ app.get('/test', (req, res) => {
             console.log(err.message);
             res.send(err.message)
         } else {
-            let streamdata;
-            let resData = response
-            cip.client.GetEquipmentStatus({ id: id })
-                .on("data", (status) => {
-                    console.log("response1", JSON.stringify(status));
-                    streamdata = status
-                    let arr = response.equipment.equipmentname
-                    console.log(response.equipment, "resData", arr)
-                    if (streamdata) {
-                        let i = arr?.findIndex(data => data.name === streamdata.name)
-                        arr[i].status = streamdata.status
-                        resData.equipment.equipmentname = arr
-                        console.log("array", JSON.stringify(resData));
 
+
+            let resData = response;
+            let arr = response.equipment.equipmentname;
+
+
+            mqttClient.on('message', (topic, message) => {
+                let streamdata = JSON.parse(message.toString());
+                console.log(`Recieved message: on ${topic} `, (streamdata));
+                if (streamdata.length > 0) {
+                    console.log("IN", arr);
+                    
+                    let i = arr?.findIndex(data => data.name === streamdata.name);
+                    console.log(i);
+                    
+                    if (i !== -1) {
+                        arr[i].status = streamdata.status;
+                        resData.equipment.equipmentname = arr;
+                        console.log("Updated array", JSON.stringify(resData));
                         wsServer.clients.forEach(client => {
                             console.log(client);
 
                             if (client.readyState === WebSocket.OPEN) {
                                 console.log("IN");
+                                console.log(resData);
 
                                 client.send(JSON.stringify(resData))
                             }
                         });
-
-
                     }
-                })
-                .on("end", () => {
-                    console.log("Server has ended the stream.");
-                });
-            console.log
-                (`CIP client added: ${JSON.stringify(resData)}`);
+                }
+
+            })
+
+            // console.log(`CIP client added: ${JSON.stringify(resData)}`);
             res.send(JSON.stringify(resData))
         }
 

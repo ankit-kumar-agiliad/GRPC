@@ -7,8 +7,11 @@ import "equipment_config.proto";
 package grpc;
 
 service EquipmentService {
+    
     rpc GetStatusStream(StatusRequest) returns (stream ServerStatus);  // Server-side streaming for status updates
+    
     rpc GetEquipmentListStream(EmptyRequest) returns (stream EquipmentList);  // Server-side streaming for equipment list
+    
     rpc GetEquipmentConfigStream(EmptyRequest) returns (stream EquipmentConfigList);  // Streaming for equipment configuration
 }
 

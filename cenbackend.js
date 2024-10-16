@@ -18,15 +18,26 @@ const cipProto = protoLoader.loadSync("cip.proto", {});
 const gRPCObject = grpc.loadPackageDefinition(cipProto);
 const cips = gRPCObject.cips;
 
+const HttpsServer = require('https');
+const fs = require('fs');
+
 let cipList = [];
 
 // Import required modules
 const { WebSocket, WebSocketServer } = require("ws");
-const http = require("http");
+
+const options = {
+    key: fs.readFileSync('certificates/key.pem'),
+    cert: fs.readFileSync('certificates/cert.pem')
+};
 
 // Create an HTTP server and a WebSocket server
-const server = http.createServer();
-const wsServer = new WebSocketServer({ server });
+const server = HttpsServer.createServer(options, (req, res) => {
+    res.write('Welcome to the secure server!\n');
+    res.end();
+});
+
+const wsServer = new WebSocketServer({ server: server });
 const port = 8081;
 
 // Start the WebSocket server
@@ -39,6 +50,9 @@ let displayMethod;
 // // Handle new client connections
 wsServer.on("connection", (connection) => {
     console.log("Received a new connection");
+    connection.on('error', () => {
+        console.error("Connection error")
+    })
     connection.on("message", (message) => {
         displayMethod = message.toString();
         console.log("++++++++++", message.toString())
@@ -51,6 +65,8 @@ wsServer.on("connection", (connection) => {
 
     // connection.on("close", () => console.log("CLosing web socket connection"));
 });
+
+
 
 mqttClient.on('connect', () => {
     console.log("connected to broker");
@@ -170,6 +186,6 @@ app.post("/cips", (req, res) => {
     res.send(cipList)
 })
 
-app.listen(3001, () => {
-    console.log("Server running on port 3000");
+HttpsServer.createServer(options, app).listen(3001, () => {
+    console.log("Server running on port 3001");
 });

@@ -1,6 +1,6 @@
 [
     {
-        "region": "USA",
+        "region": "Ottawa_CIP1",
         "equipmentname": [
             {
                 "id": 1,
@@ -23,7 +23,7 @@
         ]
     },
     {
-        "region": "Canada",
+        "region": "Ottawa_CIP2",
         "equipmentname": [
             {
                 "id": 1,
@@ -43,7 +43,122 @@
         ]
     },
     {
-        "region": "India",
+        "region": "Vacouver_CIP1",
+        "equipmentname": [
+            {
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
+            },
+            {
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
+            },
+            {
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
+            }
+        ]
+    },
+    {
+        "region": "Vacouver_CIP2",
+        "equipmentname": [
+            {
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
+            },
+            {
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
+            },
+            {
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
+            }
+        ]
+    },
+    {
+        "region": "Qubec_CIP1",
+        "equipmentname": [
+            {
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
+            },
+            {
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
+            },
+            {
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
+            }
+        ]
+    },
+    {
+        "region": "Qubec_CIP2",
+        "equipmentname": [
+            {
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
+            },
+            {
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
+            },
+            {
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
+            }
+        ]
+    },
+    {
+        "region": "Toronto_CIP1",
+        "equipmentname": [
+            {
+                "id": 1,
+                "name": "PVS3",
+                "status": "online",
+                "type": "PVS"
+            },
+            {
+                "id": 2,
+                "name": "SVS3",
+                "status": "online",
+                "type": "SVS"
+            },
+            {
+                "id": 3,
+                "name": "Scanners3",
+                "status": "online",
+                "type": "Scanner"
+            }
+        ]
+    },
+    {
+        "region": "Toronto_CIP2",
         "equipmentname": [
             {
                 "id": 1,

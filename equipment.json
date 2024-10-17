@@ -28,17 +28,20 @@
             {
                 "id": 1,
                 "name": "PVS2",
-                "status": "online"
+                "status": "online",
+                "type":"PVS"
             },
             {
                 "id": 2,
                 "name": "SVS2",
-                "status": "online"
+                "status": "online",
+                "type":"SVS"
             },
             {
                 "id": 3,
                 "name": "Scanners2",
-                "status": "online"
+                "status": "online",
+                "type":"Scanner"
             }
         ]
     },

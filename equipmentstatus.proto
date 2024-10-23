@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package grpc;
-
-message EquipmentStatus {
-    bool is_online = 1;
-    bool is_operational = 2;
-}
